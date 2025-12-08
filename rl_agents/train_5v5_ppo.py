@@ -109,6 +109,7 @@ def make_env_factory(
     env_name: str,
     representation: str,
     rewards: str,
+    action_set: str,
     stacked: bool,
     seed: int,
     players_left: int,
@@ -133,6 +134,7 @@ def make_env_factory(
             other_config_options={
                 "right_team_difficulty": difficulty,
                 "left_team_difficulty": difficulty,
+                "action_set": action_set,
             },
         )
         env.seed(seed)
@@ -153,7 +155,11 @@ def evaluate(policy: FootballPolicy, device: torch.device, args, global_step: in
         write_full_episode_dumps=False,
         number_of_left_players_agent_controls=args.controlled_left,
         number_of_right_players_agent_controls=args.controlled_right,
-        other_config_options={"right_team_difficulty": args.eval_difficulty, "left_team_difficulty": args.eval_difficulty},
+        other_config_options={
+            "right_team_difficulty": args.eval_difficulty,
+            "left_team_difficulty": args.eval_difficulty,
+            "action_set": args.action_set,
+        },
     )
     episodic_returns = []
     obs = env.reset()
@@ -173,7 +179,7 @@ def evaluate(policy: FootballPolicy, device: torch.device, args, global_step: in
                 done = False
     env.close()
     mean_return = float(np.mean(episodic_returns))
-    print(f"[eval] step={global_step} episodes={len(episodic_returns)} mean_return={mean_return:.3f}")
+    print(f"[eval] step={global_step} episodes={len(episodic_returns)} mean_return={mean_return:.8f}")
     return mean_return
 
 
@@ -227,6 +233,7 @@ def main():
     parser.add_argument("--env-name", default="5_vs_5")
     parser.add_argument("--representation", default="extracted", choices=["extracted", "pixels", "pixels_gray", "simple115", "simple115v2", "raw"])
     parser.add_argument("--rewards", default="scoring,checkpoints,shaping")
+    parser.add_argument("--action-set", default="default", choices=["default", "v2", "full"], help="Define o conjunto de acoes (use 'full' para habilitar switch manual de jogador).")
     parser.add_argument("--stacked", dest="stacked", action="store_true", help="Stack 4 frames.")
     parser.add_argument("--no-stacked", dest="stacked", action="store_false", help="Disable frame stacking.")
     parser.set_defaults(stacked=True)
@@ -241,7 +248,7 @@ def main():
     parser.add_argument("--entropy-coef", type=float, default=0.01)
     parser.add_argument("--value-coef", type=float, default=0.5)
     parser.add_argument("--max-grad-norm", type=float, default=0.5)
-    parser.add_argument("--lr", type=float, default=8e-5)
+    parser.add_argument("--lr", type=float, default=1e-05)
     parser.add_argument("--seed", type=int, default=13)
     parser.add_argument("--controlled-left", type=int, default=1)
     parser.add_argument("--controlled-right", type=int, default=0)
@@ -288,6 +295,7 @@ def main():
                     env_name=args.env_name,
                     representation=args.representation,
                     rewards=args.rewards,
+                    action_set=args.action_set,
                     stacked=args.stacked,
                     seed=env_seed,
                     players_left=args.controlled_left,
@@ -338,7 +346,7 @@ def main():
                     envs = build_vec_env(current_difficulty, seed_offset=int(global_step))
                     obs = envs.reset()
                     if is_main_process(rank):
-                        print(f"[curriculum] step={global_step} difficulty={current_difficulty:.3f}")
+                        print(f"[curriculum] step={global_step} difficulty={current_difficulty:.8f}")
 
         rollout = RolloutBuffer(args.num_steps, args.num_envs, single_observation_space.shape, single_action_space.shape if hasattr(single_action_space, "shape") else (1,))
         for step in range(args.num_steps):

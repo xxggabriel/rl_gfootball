@@ -28,6 +28,7 @@ def main():
     parser.add_argument("--env-name", default="5_vs_5")
     parser.add_argument("--representation", default="extracted", choices=["extracted", "pixels", "pixels_gray", "simple115", "simple115v2", "raw"])
     parser.add_argument("--rewards", default="scoring,checkpoints,shaping")
+    parser.add_argument("--action-set", default="full", choices=["default", "v2", "full"], help="Conjunto de acoes; use 'full' para permitir switch manual.")
     parser.add_argument("--stacked", dest="stacked", action="store_true", help="Use stacked observations.")
     parser.add_argument("--no-stacked", dest="stacked", action="store_false")
     parser.set_defaults(stacked=True)
@@ -67,6 +68,7 @@ def main():
             "right_team_difficulty": args.difficulty,
             "left_team_difficulty": args.difficulty,
             "video_format": args.video_format,
+            "action_set": args.action_set,
         },
     )
 
