@@ -358,6 +358,7 @@ class DenseRewardWrapper(gym.Wrapper):
     self._stall_x_threshold = 0.0
     self._save_reward = 0.05
     self._threat_distance = -0.8
+    self._steal_reward = 0.05
     self._goalkeeper_index = 0
     self._back_pass_penalty = 0.05
     self._own_goal_penalty = 0.7
@@ -420,6 +421,10 @@ class DenseRewardWrapper(gym.Wrapper):
 
     if current_owner in (0, 1):
       self._last_touch_team = current_owner
+
+    # Recompensa por roubar a bola do adversario.
+    if self._last_ball_owned_team == self._opponent_team and current_owner == self._agent_team:
+      shaping_reward += self._steal_reward
 
     if not self._has_touched_ball and current_owner == self._agent_team:
       shaping_reward += 0.01
