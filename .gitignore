@@ -27,3 +27,6 @@ cmake_install.cmake
 # IDE
 .idea
 .vs*
+
+# Large artifacts
+treinamento.zip
