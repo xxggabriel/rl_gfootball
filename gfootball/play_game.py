@@ -33,7 +33,7 @@ flags.DEFINE_string('players', 'keyboard:left_players=1',
                     'Semicolon separated list of players, single keyboard '
                     'player on the left by default')
 flags.DEFINE_string('level', '', 'Level to play')
-flags.DEFINE_enum('action_set', 'default', ['default', 'full'], 'Action set')
+flags.DEFINE_enum('action_set', 'full', ['default', 'full'], 'Action set')
 flags.DEFINE_bool('real_time', True,
                   'If true, environment will slow down so humans can play.')
 flags.DEFINE_bool('render', True, 'Whether to do game rendering.')

@@ -84,7 +84,7 @@ class Config(object):
 
   def __init__(self, values=None):
     self._values = {
-        'action_set': 'default',
+        'action_set': 'full',
         'custom_display_stats': None,
         'display_game_stats': True,
         'dump_full_episodes': False,
