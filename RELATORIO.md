@@ -14,7 +14,7 @@ Este documento resume a estratégia usada para treinar o agente de futebol no Go
 - Recompensas ativas (`scoring,checkpoints,shaping` em `gfootball/env/wrappers.py`):
   - `scoring`: +1 gol a favor, -1 gol sofrido (GRF base).
   - `checkpoints`: 10 marcos até o gol adversário; cada marco com posse vale +0.1; gol soma bônus pelos marcos não coletados.
-  - `shaping`: sinal denso clipado em [-2, 1] após somar tudo; inclui primeiro toque (+0.01), passe completo (+0.04), perda de posse (-0.05), falta/bola parada sem gol (-0.02), progresso em x (± até 0.02), chute na zona x>0.9/|y|<=0.12 (+0.05), aproximação do gol com posse (+ até 0.03), estagnação na própria metade (-0.002/step), “salvamento” defensivo (+0.05).
+  - `shaping`: sinal denso clipado em [-2, 1] após somar tudo; inclui primeiro toque (+0.01), passe completo (+0.04), perda de posse (-0.05), falta/bola parada sem gol (-0.02), progresso em x (± até 0.02), chute na zona x>0.9/|y|<=0.12 (+0.05), aproximação do gol com posse (+ até 0.03), estagnação na própria metade (-0.002/step), “salvamento” defensivo (+0.05), roubo de bola do adversário (+0.05).
   - Penalidades adicionais: recuos para o goleiro (player 0) contam; a partir do 2º recuo no episódio, -0.05 cada; gol contra com último toque do nosso time recebe -0.7 extra.
 
 ## Espaço de Observação e Ação
