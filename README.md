@@ -47,12 +47,13 @@ Instructions are available [here](gfootball/doc/docker.md).
   ```
 - Inferir/gravar vídeos a partir de um checkpoint:
   ```bash
-  docker run --gpus all --ipc=host --shm-size=4g \
+  docker run --platform linux/amd64 --ipc=host --shm-size=4g \
     -it --rm \
     -e RECORD_VIDEO=1 -e RENDER=1 -e EPISODES=2 \
     -v "$(pwd)":/workspace -v "$(pwd)/videos":/workspace/videos \
     -w /workspace \
-    gfootball-rl ./run.sh infer CHECKPOINT=policy/best_model.pt
+    gfootball-rl-cpu ./run.sh infer CHECKPOINT=policy/best_model.pt
+
   ```
   Em hosts sem GPU, remova `--gpus all` e use a imagem CPU equivalente.
 
