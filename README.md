@@ -28,6 +28,34 @@ This method doesn't support game rendering on screen - if you want to see the ga
 This is the recommended way for Linux-based systems to avoid incompatible package versions.
 Instructions are available [here](gfootball/doc/docker.md).
 
+#### Docker (treino e inferência com este repo)
+- Construir a imagem (CPU ou GPU, conforme seu Dockerfile):
+  ```bash
+  docker build -t gfootball-rl .
+  ```
+- Treinar (exemplo, com variáveis ajustáveis):
+  ```bash
+  docker run --gpus all --ipc=host --shm-size=8g \
+    -it --rm \
+    -e NUM_ENVS=32 -e NUM_STEPS=2048 -e TOTAL_TIMESTEPS=100000000 \
+    -e OMP_NUM_THREADS=1 \
+    -e LD_LIBRARY_PATH="/opt/hpcx/ompi/lib:/opt/hpcx/ucx/lib:/opt/hpcx/ucc/lib:/opt/hpcx/hcoll/lib:$LD_LIBRARY_PATH" \
+    -e LD_PRELOAD="/opt/hpcx/ompi/lib/libmpi.so.40" \
+    -v "$(pwd)":/workspace -w /workspace \
+    -d gfootball-rl ./run.sh train
+
+  ```
+- Inferir/gravar vídeos a partir de um checkpoint:
+  ```bash
+  docker run --gpus all --ipc=host --shm-size=4g \
+    -it --rm \
+    -e RECORD_VIDEO=1 -e RENDER=1 -e EPISODES=2 \
+    -v "$(pwd)":/workspace -v "$(pwd)/videos":/workspace/videos \
+    -w /workspace \
+    gfootball-rl ./run.sh infer CHECKPOINT=policy/best_model.pt
+  ```
+  Em hosts sem GPU, remova `--gpus all` e use a imagem CPU equivalente.
+
 ### On your computer
 
 #### 1. Install required packages
