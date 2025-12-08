@@ -457,32 +457,32 @@ class DenseRewardWrapper(gym.Wrapper):
         self._shots_on_target += 1
       prev_goal_distance = self._target_goal_x - float(self._last_ball_position[0])
       goal_distance = self._target_goal_x - ball_x
-        self._ball_goal_delta_sum += prev_goal_distance - goal_distance
-        self._ball_goal_delta_count += 1
+      self._ball_goal_delta_sum += prev_goal_distance - goal_distance
+      self._ball_goal_delta_count += 1
 
-        # Closer to goal bonus when in control.
-        if current_owner == self._agent_team and ball_x > self._close_x_threshold:
-          close_gain = (ball_x - self._close_x_threshold) / (self._target_goal_x - self._close_x_threshold)
-          shaping_reward += self._close_reward_scale * min(1.0, close_gain)
+      # Closer to goal bonus when in control.
+      if current_owner == self._agent_team and ball_x > self._close_x_threshold:
+        close_gain = (ball_x - self._close_x_threshold) / (self._target_goal_x - self._close_x_threshold)
+        shaping_reward += self._close_reward_scale * min(1.0, close_gain)
 
-        # Penalize stalling in own half with the ball.
-        if current_owner == self._agent_team and ball_x < self._stall_x_threshold:
-          if delta_x <= self._stall_progress_eps:
-            self._stall_steps += 1
-            shaping_reward -= self._stall_penalty
-          else:
-            self._stall_steps = 0
+      # Penalize stalling in own half with the ball.
+      if current_owner == self._agent_team and ball_x < self._stall_x_threshold:
+        if delta_x <= self._stall_progress_eps:
+          self._stall_steps += 1
+          shaping_reward -= self._stall_penalty
         else:
           self._stall_steps = 0
+      else:
+        self._stall_steps = 0
 
-        # Detect defensive saves: opponent near our goal, then we regain control without conceding.
-        if current_owner == self._opponent_team and ball_x < self._threat_distance:
-          self._threat_active = True
-        if self._threat_active and current_owner == self._agent_team and score_reward >= 0:
-          shaping_reward += self._save_reward
-          self._threat_active = False
-        if ball_x > -0.5:
-          self._threat_active = False
+      # Detect defensive saves: opponent near our goal, then we regain control without conceding.
+      if current_owner == self._opponent_team and ball_x < self._threat_distance:
+        self._threat_active = True
+      if self._threat_active and current_owner == self._agent_team and score_reward >= 0:
+        shaping_reward += self._save_reward
+        self._threat_active = False
+      if ball_x > -0.5:
+        self._threat_active = False
 
     # Penalize excesso de recuos para o goleiro apos o primeiro.
     if (self._last_ball_owned_team == self._agent_team and
