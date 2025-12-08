@@ -20,10 +20,11 @@ if [[ "${MODE}" == "train" ]]; then
     --total-timesteps "${TOTAL_TIMESTEPS:-100000000}" \
     --num-envs "${NUM_ENVS:-32}" \
     --num-steps "${NUM_STEPS:-2048}" \
-    --lr "${LR:-8e-5}" \
+    --lr "${LR:-1e-05}" \
     --checkpoint-dir "${CHECKPOINT_DIR:-policy}" \
     --logdir "${LOGDIR:-runs/ppo_5v5}" \
     --env-name "${ENV_NAME:-5_vs_5}" \
+    --action-set "${ACTION_SET:-full}" \
     --rewards "${REWARDS:-scoring,checkpoints,shaping}" \
     --opponent-difficulty-end "${OPP_DIFFICULTY_END:-0.8}"
 else
@@ -44,6 +45,7 @@ else
     --checkpoint "${CHECKPOINT:-policy/best_model.pt}" \
     --env-name "${ENV_NAME:-5_vs_5}" \
     --representation "${REPRESENTATION:-extracted}" \
+    --action-set "${ACTION_SET:-full}" \
     --rewards "${REWARDS:-scoring,checkpoints,shaping}" \
     --episodes "${EPISODES:-5}" \
     --difficulty "${DIFFICULTY:-0.6}" \
